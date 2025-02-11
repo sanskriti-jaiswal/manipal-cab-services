@@ -1,18 +1,39 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+
 const Home = () => {
   return (
-    <div>
-      <div className="bg-cover bg-center bg-[url(https://images.unsplash.com/photo-1596857028033-e323a15ad16e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHRyYWZmaWMlMjBzaWduYWx8ZW58MHx8MHx8fDA%3D)] h-screen pt-8 flex justify-between flex-col w-full bg-red-400">
-        <img className="w-16 ml-8" src="/logo.jpg" alt="Manipal Logo"  />
-        <div className="bg-white py-4 px-4"><h2 className="text-3xl font-bold">Get started with Manipal-Cabs</h2>
-        <Link to='/login' className="flex items-center justify-center w-full bg-black text-white py-3 rounded mt-5">Continue</Link></div>
+    <div className="h-screen w-full relative overflow-hidden">
+      {/* Logo */}
+      <img className="w-16 absolute left-5 top-5" src="/public/logo.png" alt="Manipal Cabs Logo" />
+
+      {/* Background Image */}
+      <div className="h-screen w-full">
+        <img className="h-full w-full object-cover" src="/public/map-logo.png" alt="map" />
+      </div>
+
+      {/* Trip Search Form */}
+      <div className="bg-white h-screen absolute top-0 left-0 w-full p-4 shadow-md">
+       <div className='h-[30%]'>
+       <h4 className="text-2xl font-semibold text-center mb-3">Find a Trip</h4>
+        <form className="w-full flex flex-col items-center gap-2">
+          <input
+            type="text"
+            placeholder="Add a pick-up location"
+            className="w-11/12 p-3 border border-gray-300 rounded-lg text-center bg-[#eee]"
+          />
+          <input
+            type="text"
+            placeholder="Enter your destination"
+            className="w-11/12 p-3 border border-gray-300 rounded-lg text-center bg-[#eee]"
+          />
+        </form>
+       </div>
+       <div className='h-[70%] bg-red-500'>
+
+       </div>
       </div>
     </div>
-
-
-  )
-
+  );
 };
 
 export default Home;

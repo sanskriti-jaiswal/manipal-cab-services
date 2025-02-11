@@ -1,85 +1,88 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from 'react'
+import { Link } from 'react-router-dom'
+import { UserDataContext } from '../context/UserContext'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const UserLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
+  const [ userData, setUserData ] = useState({})
 
-  const submitHandler = (e) => {
+  const { user, setUser } = useContext(UserDataContext)
+  const navigate = useNavigate()
+
+
+
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setError("Please fill in all fields.");
-      return;
+    const userData = {
+      email: email,
+      password: password
     }
 
-    console.log("Logging in with:", { email, password });
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData)
 
-    // Simulate authentication (replace with actual API call)
-    if (email === "sanskritijaiswal.lko@gmail.com" && password === "chicky@1") {
-      alert("Login successful!");
-    } else {
-      setError("Invalid email or password");
+    if (response.status === 200) {
+      const data = response.data
+      setUser(data.user)   
+      localStorage.setItem('token', data.token)
+      navigate('/home')
     }
 
-    setEmail("");
-    setPassword("");
-  };
+
+    setEmail('')
+    setPassword('')
+  }
 
   return (
-    <div className="p-7 h-screen flex flex-col justify-between">
+    <div className='p-7 h-screen flex flex-col justify-between'>
       <div>
-        <h3 className="text-lg font-medium mb-2">What's your email</h3>
-        
-        {/* ✅ Wrap inside a form */}
-        <form onSubmit={submitHandler}>
+        <img className='w-16 mb-10' src="/logo.png" alt="" />
+
+        <form onSubmit={(e) => {
+          submitHandler(e)
+        }}>
+          <h3 className='text-lg font-medium mb-2'>What's your email</h3>
           <input
+            required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="bg-gray-200 mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
+            onChange={(e) => {
+              setEmail(e.target.value)
+            }}
+            className='bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'
             type="email"
-            placeholder="email@example.com"
+            placeholder='email@example.com'
           />
 
-          <h3 className="text-lg font-medium mb-2">Enter password</h3>
+          <h3 className='text-lg font-medium mb-2'>Enter Password</h3>
+
           <input
+            className='bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            type="password"
-            className="bg-gray-200 mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
-            placeholder="password"
+            onChange={(e) => {
+              setPassword(e.target.value)
+            }}
+            required type="password"
+            placeholder='password'
           />
-
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
           <button
-            type="submit"
-            className="bg-black text-white font-semibold mb-3 rounded px-4 py-2 w-full text-lg"
-          >
-            Login
-          </button>
-        </form>
+            className='bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base'
+          >Login</button>
 
-        <p className="text-center">
-          New here?{" "}
-          <Link className="text-blue-600" to="/signup">
-            Create new account
-          </Link>
-        </p>
+        </form>
+        <p className='text-center'>New here? <Link to='/signup' className='text-blue-600'>Create new Account</Link></p>
       </div>
       <div>
         <Link
-          to="/captain-login"
-          className="bg-green-500 flex items-center justify-center text-white font-semibold mb-5 rounded px-4 py-2 w-full text-lg"
-        >
-          Sign in as Captain
-        </Link>
+          to='/captain-login'
+          className='bg-[#10b461] flex items-center justify-center text-white font-semibold mb-5 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base'
+        >Sign in as Captain</Link>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserLogin;
+export default UserLogin

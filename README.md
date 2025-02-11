@@ -1,9 +1,4 @@
-Sure! Here’s your **fully formatted `README.md` file** ready for deployment on GitHub. Just copy and paste this into a `README.md` file in your project. 🚀  
 
----
-
-### 📜 **README.md**
-```md
 # Backend API Documentation
 
 ## 📌 Endpoints
@@ -226,16 +221,9 @@ This project is licensed under the **MIT License**.
 
 ## 📞 **Contact**
 For any issues or suggestions, feel free to reach out:
-- **GitHub:** [rashimalviyaa](https://github.com/your-username)
-- **Email:** 
+- **GitHub:** (https://github.com/rashimalviyaa)
+- **Email:** rashimalviyaa20032gmail.com
 ```
 
 ---
 
-## ✅ **Final Notes**
-- **Perfectly formatted for GitHub** ✅  
-- **Syntax highlighting for JSON and shell commands** ✅  
-- **Clear sectioning and headers** ✅  
-- **Includes setup instructions and technologies used** ✅  
-
-Just **copy-paste** this into your `README.md` file, and it's **ready to go**! 🚀🔥 Let me know if you need any modifications! 😊
