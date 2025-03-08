@@ -1,57 +1,49 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { CaptainDataContext } from '../context/CapatainContext'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import React, { useContext, useEffect, useState } from 'react';
+import { CaptainDataContext } from '../context/CaptainContext';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const CaptainProtectWrapper = ({
-    children
-}) => {
-
-    const token = localStorage.getItem('token')
-    const navigate = useNavigate()
-    const { captain, setCaptain } = useContext(CaptainDataContext)
-    const [ isLoading, setIsLoading ] = useState(true)
-
-
-
+const CaptainProtectWrapper = ({ children }) => {
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
+    const { setCaptain } = useContext(CaptainDataContext);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (!token) {
-            navigate('/captain-login')
+            navigate('/captain-login');
+            return;
         }
 
-        axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        const fetchProfile = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                console.log("API Response:", response.data);
+                
+                if (response.data && response.data.captain) {
+                    setCaptain(response.data.captain);
+                    setIsLoading(false);
+                } else {
+                    throw new Error("Invalid response format");
+                }
+            } catch (err) {
+                console.error("API Error:", err.response?.data || err.message);
+                localStorage.removeItem('token');
+                navigate('/captain-login');
             }
-        }).then(response => {
-            if (response.status === 200) {
-                setCaptain(response.data.captain)
-                setIsLoading(false)
-            }
-        })
-            .catch(err => {
+        };
 
-                localStorage.removeItem('token')
-                navigate('/captain-login')
-            })
-    }, [ token ])
-
-    
+        fetchProfile();
+    }, [token, navigate, setCaptain]);
 
     if (isLoading) {
-        return (
-            <div>Loading...</div>
-        )
+        return <div className="flex h-screen w-screen items-center justify-center">Loading...</div>;
     }
 
+    return <>{children}</>;
+};
 
-
-    return (
-        <>
-            {children}
-        </>
-    )
-}
-
-export default CaptainProtectWrapper
+export default CaptainProtectWrapper;
