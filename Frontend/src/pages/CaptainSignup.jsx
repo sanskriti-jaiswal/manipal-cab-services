@@ -21,34 +21,38 @@ const CaptainSignup = () => {
     e.preventDefault();
 
     const captainData = {
-      fullname: {
-        firstname: firstName.trim(),
-        lastname: lastName.trim()
-      },
-      email: email.trim(),
-      password,
-      vehicle: {
-        color: vehicleColor.trim(),
-        plate: vehiclePlate.trim(),
-        capacity: Number(vehicleCapacity),
-        vehicleType
-      }
+        fullname: {
+            firstname: firstName.trim(),
+            lastname: lastName.trim(),
+        },
+        email: email.trim(),
+        password,
+        vehicle: {
+            color: vehicleColor.trim(),
+            plate: vehiclePlate.trim(),
+            capacity: Number(vehicleCapacity),
+            vehicleType,
+        },
     };
 
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData);
+    console.log("🚀 Sending captain data:", JSON.stringify(captainData, null, 2));
 
-      if (response.status === 201) {
-        const data = response.data;
-        setCaptain(data.captain);
-        localStorage.setItem('token', data.token);
-        navigate('/captain-home'); // ✅ Redirect to captain home after signup
-      }
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData, {
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.status === 201) {
+            const data = response.data;
+            setCaptain(data.captain);
+            localStorage.setItem('token', data.token);
+            navigate('/captain-home');
+        }
     } catch (error) {
-      setError(error.response?.data?.message || 'Signup failed. Please try again.');
-      console.error("Signup error:", error);
+        console.error("❌ Signup error:", error.response?.data || error);
+        setError(error.response?.data?.message || "Signup failed. Please try again.");
     }
-  };
+};
 
   return (
     <div className='py-5 px-5 h-screen flex flex-col justify-between'>
@@ -80,7 +84,7 @@ const CaptainSignup = () => {
               <option value="" disabled>Select Vehicle Type</option>
               <option value="car">Car</option>
               <option value="auto">Auto</option>
-              <option value="moto">Moto</option>
+              <option value="motorcycle">Motorcycle</option>  {/* ✅ Fixed here */}
             </select>
           </div>
 

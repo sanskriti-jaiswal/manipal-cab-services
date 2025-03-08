@@ -1,13 +1,15 @@
-import React, { useRef, useState, useEffect, useContext } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom';
 import CaptainDetails from '../components/CaptainDetails';
 import RidePopUp from '../components/RidePopUp';
+import ConfirmRidePopUp from '../components/ConfirmRidePopUp'; // ✅ Importing Confirm Ride Component
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { CaptainDataContext } from '../context/CaptainContext';
 
 const CaptainHome = () => {
     const [ridePopupPanel, setRidePopupPanel] = useState(false);
+    const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false); // ✅ State for confirmation panel
     const ridePopupPanelRef = useRef(null);
     const [ride, setRide] = useState(null);
 
@@ -23,6 +25,7 @@ const CaptainHome = () => {
         // Simulate receiving a new ride request (Mock Example)
         const timer = setTimeout(() => {
             setRide({
+                _id: "ride123",  // Mock ID
                 user: { fullname: { firstname: "John", lastname: "Doe" }, profileImage: "https://i.pravatar.cc/100" },
                 pickup: "20B, Near Singhai's Cafe, Bhopal",
                 destination: "24B, Near Kapoor's Cafe, Bhopal",
@@ -35,10 +38,13 @@ const CaptainHome = () => {
         return () => clearTimeout(timer);
     }, [captain, navigate]);
 
-    const confirmRide = () => {
-        console.log("Ride Confirmed:", ride);
+    const acceptRide = () => {
+        console.log("Ride Accepted:", ride); // Debugging log
+        setConfirmRidePopupPanel(true);
         setRidePopupPanel(false);
     };
+    
+    
 
     useGSAP(() => {
         if (ridePopupPanelRef.current) {
@@ -70,12 +76,25 @@ const CaptainHome = () => {
             </div>
 
             {/* Ride PopUp */}
-            {ride && (
+            {ride && ridePopupPanel && (
                 <div ref={ridePopupPanelRef} className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-10 pt-12 shadow-lg z-20">
                     <RidePopUp 
+    ride={ride} 
+    setRidePopupPanel={setRidePopupPanel} 
+    setConfirmRidePopupPanel={setConfirmRidePopupPanel} // ✅ Correctly passing this function
+    confirmRide={acceptRide}  
+/>
+
+                </div>
+            )}
+
+            {/* Confirm Ride PopUp (Only Show After Accepting) */}
+            {confirmRidePopupPanel && (
+                <div className="fixed w-full bottom-0 bg-white px-3 py-10 pt-12 shadow-lg z-30">
+                    <ConfirmRidePopUp 
                         ride={ride} 
-                        setRidePopupPanel={setRidePopupPanel} 
-                        confirmRide={confirmRide} 
+                        setConfirmRidePopupPanel={setConfirmRidePopupPanel}
+                        setRidePopupPanel={setRidePopupPanel}
                     />
                 </div>
             )}
