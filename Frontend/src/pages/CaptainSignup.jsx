@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CaptainDataContext } from '../context/CaptainContext';
 import axios from 'axios';
@@ -16,6 +16,36 @@ const CaptainSignup = () => {
   const [vehicleCapacity, setVehicleCapacity] = useState('');
   const [vehicleType, setVehicleType] = useState('');
   const [error, setError] = useState('');
+  const [maxCapacity, setMaxCapacity] = useState(15);
+
+  // Define mapping between display names and backend values
+  const vehicleTypeMapping = {
+    'Mini': 'car',
+    'Sedan': 'car',
+    'SUV': 'car',
+    'Traveller': 'car'
+  };
+
+  // Define max capacities for each vehicle type
+  const vehicleCapacityLimits = {
+    'Mini': 3,
+    'Sedan': 4,
+    'SUV': 8,
+    'Traveller': 15
+  };
+
+  // Update max capacity when vehicle type changes
+  useEffect(() => {
+    if (vehicleType) {
+      const newMaxCapacity = vehicleCapacityLimits[vehicleType];
+      setMaxCapacity(newMaxCapacity);
+      
+      // If current capacity exceeds the new max, reset to the max
+      if (vehicleCapacity > newMaxCapacity) {
+        setVehicleCapacity(newMaxCapacity.toString());
+      }
+    }
+  }, [vehicleType]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -31,7 +61,7 @@ const CaptainSignup = () => {
             color: vehicleColor.trim(),
             plate: vehiclePlate.trim(),
             capacity: Number(vehicleCapacity),
-            vehicleType,
+            vehicleType: vehicleTypeMapping[vehicleType] || vehicleType, // Map to backend value
         },
     };
 
@@ -52,7 +82,7 @@ const CaptainSignup = () => {
         console.error("❌ Signup error:", error.response?.data || error);
         setError(error.response?.data?.message || "Signup failed. Please try again.");
     }
-};
+  };
 
   return (
     <div className='py-5 px-5 h-screen flex flex-col justify-between'>
@@ -79,14 +109,37 @@ const CaptainSignup = () => {
           </div>
 
           <div className='flex gap-4 mb-7'>
-            <input required className='bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg' type="number" placeholder='Vehicle Capacity' value={vehicleCapacity} onChange={(e) => setVehicleCapacity(e.target.value)} />
-            <select required className='bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg' value={vehicleType} onChange={(e) => setVehicleType(e.target.value)}>
+            <select 
+              required 
+              className='bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg' 
+              value={vehicleCapacity} 
+              onChange={(e) => setVehicleCapacity(e.target.value)}
+              disabled={!vehicleType}
+            >
+              <option value="" disabled>Vehicle Capacity</option>
+              {vehicleType && [...Array(vehicleCapacityLimits[vehicleType])].map((_, index) => (
+                <option key={index + 1} value={index + 1}>{index + 1}</option>
+              ))}
+            </select>
+            <select 
+              required 
+              className='bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg' 
+              value={vehicleType} 
+              onChange={(e) => setVehicleType(e.target.value)}
+            >
               <option value="" disabled>Select Vehicle Type</option>
-              <option value="car">Car</option>
-              <option value="auto">Auto</option>
-              <option value="motorcycle">Motorcycle</option>  {/* ✅ Fixed here */}
+              <option value="Mini">Mini</option>
+              <option value="Sedan">Sedan</option>
+              <option value="SUV">SUV</option>
+              <option value="Traveller">Traveller</option>
             </select>
           </div>
+          
+          {vehicleType && (
+            <p className="text-sm text-gray-600 mb-4">
+              Maximum capacity for {vehicleType}: {vehicleCapacityLimits[vehicleType]} passengers
+            </p>
+          )}
 
           {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
