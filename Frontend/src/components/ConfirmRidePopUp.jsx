@@ -17,68 +17,79 @@ const ConfirmRidePopUp = (props) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-t-2xl shadow-lg w-full">
+        <div className="bg-white rounded-t-3xl shadow-xl w-full overflow-hidden">
+            {/* Subtle handle bar */}
+            <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 bg-gray-200 rounded-full"></div>
+            </div>
+            
             {/* Header */}
-            <h3 className="text-lg font-semibold text-center text-gray-900">
+            <h3 className="text-xl font-bold text-center text-gray-800 mb-5">
                 Confirm this ride to Start
             </h3>
 
             {/* User & Distance Box */}
-            <div className="flex items-center justify-between p-3 border-2 border-yellow-400 rounded-lg shadow-md mt-4">
+            <div className="flex items-center justify-between p-4 bg-amber-300 mx-4 mb-6 rounded-xl shadow-sm">
                 <div className="flex items-center gap-3">
                     <img 
-                        className="h-12 w-12 rounded-full object-cover" 
+                        className="h-12 w-12 rounded-full object-cover border-2 border-white shadow-sm" 
                         src={props.ride?.user?.profileImage || "https://via.placeholder.com/100"} 
                         alt="User"
                     />
-                    <h2 className="text-md font-semibold capitalize">{props.ride?.user?.fullname?.firstname}</h2>
+                    <h2 className="text-lg font-semibold text-gray-800 capitalize">{props.ride?.user?.fullname?.firstname}</h2>
                 </div>
-                <h5 className="text-md font-bold">{props.ride?.distance.replace("KM KM", "KM")}</h5>
+                <h5 className="text-lg font-bold text-gray-800">{props.ride?.distance?.replace("KM KM", "KM")}</h5>
             </div>
 
             {/* Ride Details */}
-            <div className="w-full mt-5">
+            <div className="px-6">
                 {/* Pickup */}
-                <div className="flex items-center gap-4 p-4 border-b">
-                    <i className="ri-map-pin-user-fill text-lg text-black"></i>
-                    <div>
-                        <p className="text-md font-semibold">Pickup</p>
-                        <p className="text-sm text-gray-600">{props.ride?.pickup}</p>
+                <div className="flex items-start gap-4 py-3.5 border-b border-gray-300">
+                    <div className="mt-1 w-6">
+                        <i className="ri-map-pin-user-fill text-xl text-black"></i>
+                    </div>
+                    <div className="text-center w-full">
+                        <p className="text-base font-medium text-gray-800">Pickup</p>
+                        <p className="text-sm text-gray-500">{props.ride?.pickup}</p>
                     </div>
                 </div>
 
                 {/* Destination */}
-                <div className="flex items-center gap-4 p-4 border-b">
-                    <i className="ri-map-pin-2-fill text-lg text-black"></i>
-                    <div>
-                        <p className="text-md font-semibold">Destination</p>
-                        <p className="text-sm text-gray-600">{props.ride?.destination}</p>
+                <div className="flex items-start gap-4 py-3.5 border-b border-gray-300">
+                    <div className="mt-1 w-6">
+                        <i className="ri-map-pin-2-fill text-xl text-black"></i>
+                    </div>
+                    <div className="text-center w-full">
+                        <p className="text-base font-medium text-gray-800">Destination</p>
+                        <p className="text-sm text-gray-500">{props.ride?.destination}</p>
                     </div>
                 </div>
 
                 {/* Fare & Payment */}
-                <div className="flex flex-col items-center gap-2 p-4">
-                    <div className="flex items-center gap-2">
-                        <i className="ri-currency-line text-lg text-black"></i>
-                        <h3 className="text-md font-semibold">₹{props.ride?.fare}</h3>
+                <div className="flex items-start gap-4 py-3.5">
+                    <div className="mt-1 w-6">
+                        <i className="ri-currency-line text-xl text-black"></i>
                     </div>
-                    <p className="text-sm text-gray-600">Payment: Cash</p>
+                    <div className="text-center w-full">
+                        <p className="text-base font-bold text-gray-800">₹{props.ride?.fare}</p>
+                        <p className="text-sm text-gray-500">Cash</p>
+                    </div>
                 </div>
             </div>
 
             {/* OTP Input (Frontend Only) */}
-            <form onSubmit={submitHandler}>
+            <form onSubmit={submitHandler} className="px-6 pt-4 pb-8">
                 <input 
                     value={otp} 
                     onChange={(e) => setOtp(e.target.value)} 
                     type="text" 
-                    className="bg-gray-200 px-6 py-4 font-mono text-lg rounded-lg w-full mt-3 text-center"
+                    className="bg-gray-100 px-6 py-4 font-mono text-lg rounded-xl w-full mt-3 text-center shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Enter OTP"
                 />
 
                 <button 
                     type="submit" 
-                    className="w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg"
+                    className="w-full mt-5 bg-green-500 text-white font-semibold py-3.5 rounded-xl shadow-sm hover:bg-green-600 transition duration-200 text-base"
                 >
                     Confirm
                 </button>
@@ -86,7 +97,7 @@ const ConfirmRidePopUp = (props) => {
                 <button 
                     type="button" 
                     onClick={() => props.setConfirmRidePopupPanel(false)}
-                    className="w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg"
+                    className="w-full mt-3 bg-red-500 text-white font-semibold py-3.5 rounded-xl shadow-sm hover:bg-red-600 transition duration-200 text-base"
                 >
                     Cancel
                 </button>

@@ -9,13 +9,15 @@ const ConfirmRide = ({
 }) => {
     return (
         <div className="bg-white p-6 rounded-t-lg shadow-lg w-full transition-all duration-300">
-            {/* Close Button */}
-            <h5 
-                className="p-1 text-center w-full absolute top-0 cursor-pointer"
-                onClick={() => setConfirmRidePanel(false)}
-            >
-                <i className="text-3xl text-gray-400 ri-arrow-down-wide-line"></i>
-            </h5>
+            {/* Close Button - Only on the top right corner */}
+            <div className="flex justify-end mb-2">
+                <span
+                    className="cursor-pointer"
+                    onClick={() => setConfirmRidePanel(false)}
+                >
+                    <i className="text-2xl text-gray-400 ri-arrow-down-wide-line"></i>
+                </span>
+            </div>
 
             {/* Title */}
             <h3 className="text-2xl font-semibold mb-5 text-center">Confirm your Ride</h3>
@@ -36,19 +38,19 @@ const ConfirmRide = ({
                     </div>
                 </div>
 
-                {/* Destination Location */}
+                {/* Destination Location - Center aligned text */}
                 <div className="flex items-center gap-5 p-3 border-b">
                     <i className="ri-map-pin-2-fill text-lg text-red-500"></i>
-                    <div>
+                    <div className="text-center w-full">
                         <h3 className="text-md font-medium">Destination</h3>
                         <p className="text-sm text-gray-600">{destination || "Not Selected"}</p>
                     </div>
                 </div>
 
-                {/* Fare */}
+                {/* Fare - Center aligned text */}
                 <div className="flex items-center gap-5 p-3">
                     <i className="ri-currency-line text-lg text-green-600"></i>
-                    <div>
+                    <div className="text-center w-full">
                         <h3 className="text-md font-medium">₹{selectedVehicle?.price || "0"}</h3>
                         <p className="text-sm text-gray-600">Payment: Cash</p>
                     </div>

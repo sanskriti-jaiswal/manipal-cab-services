@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 
 const LocationSearchPanel = ({ setShowVehiclePanel, setSelectedLocation, setPanelOpen }) => {
     const locations = [
-        "24B, Near Kapoor's Cafe, Sheryians Coding School, Bhopal",
-        "22C, Near Malhotra's Cafe, Sheryians Coding School, Bhopal",
-        "20B, Near Singhai's Cafe, Sheryians Coding School, Bhopal",
-        "18A, Near Sharma's Cafe, Sheryians Coding School, Bhopal"
+        "Jaipur Junction, Station Road, Gopalbari, Jaipur, Rajasthan",
+        "Jaipur International Airport, Airport Road, Sanganer, Jaipur, Rajasthan",
+        "Bus Stand, Vanasthali Marg, Sindhi Camp, Jaipur",
+        "World Trade Park, Jawaharlal Nehru Marg, Malviya Nagar, Jaipur"
     ];
 
     const [selected, setSelected] = useState(null);
