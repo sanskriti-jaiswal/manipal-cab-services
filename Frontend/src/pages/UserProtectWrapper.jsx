@@ -7,13 +7,14 @@ import { SocketContext } from '../context/SocketContext';
 const UserProtectWrapper = ({ children }) => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
-  const { user, setUser } = useContext(UserDataContext);
+  const { setUser } = useContext(UserDataContext);
   const { socket } = useContext(SocketContext);
   const [isLoading, setIsLoading] = useState(true);
   const hasJoinedRef = useRef(false);
 
   useEffect(() => {
     if (!token) {
+      console.warn("❌ No token found, redirecting to login...");
       navigate('/login');
       return;
     }
@@ -31,16 +32,14 @@ const UserProtectWrapper = ({ children }) => {
       }
 
       const sendJoin = () => {
-        if (!hasJoinedRef.current && userData?._id && socket.connected) {
-          const payload = { userId: userData._id, userType: "user" };
-          console.log("🚀 Emitting 'user-client-join' with:", payload);
-          try {
-            console.log("🚀 Emitting 'user-client-join' with:", payload);
-            socket.emit("user-client-join", payload);
-          } catch (err) {
-            console.error("❌ Failed to emit:", err);
-          }
-          
+        const payload = {
+          userId: userData._id,
+          userType: "user"
+        };
+
+        if (!hasJoinedRef.current && socket.connected && payload.userId) {
+          console.log("📤 Sending payload:", payload);
+          socket.emit("user-client-join", payload); // 🚀 Ensure sending object
           hasJoinedRef.current = true;
         }
       };
@@ -51,11 +50,11 @@ const UserProtectWrapper = ({ children }) => {
         socket.once("connect", sendJoin);
       }
     }).catch((err) => {
-      console.error("Profile fetch failed:", err);
+      console.error("❌ Failed to fetch profile:", err);
       localStorage.removeItem("token");
       navigate('/login');
     });
-  }, [token]);
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   return <>{children}</>;

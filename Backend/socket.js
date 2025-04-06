@@ -7,7 +7,7 @@ let io;
 function initializeSocket(server) {
   io = socketIo(server, {
     cors: {
-      origin: '*', // Allow all origins for now
+      origin: '*',
       methods: ['GET', 'POST'],
       credentials: true
     }
@@ -22,25 +22,24 @@ function initializeSocket(server) {
     console.log(`🧠 User-Agent: ${userAgent}`);
     console.log(`📦 Full headers:`, socket.handshake.headers);
 
-    // 🔓 TEMPORARILY DISABLED: Block unknown origins
-    /*
-    const allowedOrigins = ['http://localhost:5173'];
-    if (!origin || !allowedOrigins.includes(origin)) {
-      console.warn(`⛔ Blocked connection from untrusted origin: ${origin}`);
-      socket.disconnect(true);
-      return;
-    }
-    */
-
-    // Handle custom join event
     socket.on('user-client-join', async (data) => {
-      console.log("🔍 Type of received data:", typeof data);
-      console.log("🔍 Raw data:", data);
-      console.log("📡 From socket:", socket.id);
+      console.log("🔍 Received 'user-client-join' data type:", typeof data);
+      console.log("🔍 Received data:", data);
+
+      if (typeof data === 'string') {
+        try {
+          console.warn("⚠️ Received string instead of object, attempting to parse...");
+          data = JSON.parse(data);
+        } catch (err) {
+          console.error("❌ Error processing join event:", err.message);
+          return;
+        }
+      }
 
       const { userId, userType } = data || {};
+
       if (!userId || !userType) {
-        console.warn(`⛔ Invalid 'user-client-join' from ${socket.id}:`, data);
+        console.warn(`⛔ Invalid payload (not an object) from ${socket.id}`);
         return;
       }
 

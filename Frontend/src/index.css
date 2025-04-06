@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* Prevent zoom/scroll issues on mobile */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
   font-family: Arial, sans-serif;
   text-align: center;
-  padding: 20px;
+  background-color: #fff;
 }

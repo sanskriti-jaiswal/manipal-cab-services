@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import 'remixicon/fonts/remixicon.css';
+import { useNavigate } from 'react-router-dom';
 
 import LocationSearchPanel from '../components/LocationSearchPanel';
 import VehiclePanel from '../components/VehiclePanel';
@@ -34,17 +35,14 @@ const Home = () => {
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
-
   const { socket } = useContext(SocketContext);
+  const navigate = useNavigate();
 
-  // ✅ Listen for updates
   useEffect(() => {
     if (!socket) return;
-
     const handleRideUpdate = (data) => {
       console.log("📦 Ride update received:", data);
     };
-
     socket.on("rideUpdate", handleRideUpdate);
     return () => {
       socket.off("rideUpdate", handleRideUpdate);
@@ -180,6 +178,14 @@ const Home = () => {
   return (
     <div className="relative h-screen w-screen bg-white overflow-hidden">
       <img className="w-16 absolute left-5 top-5" src="/logo.png" alt="Logo" />
+
+      {/* 💜 Pool Cab Button */}
+      <button
+        onClick={() => navigate('/all-pooled-cabs')}
+        className="absolute top-5 right-5 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg z-20"
+      >
+        Pool Cab
+      </button>
 
       <div className={`w-full h-full ${panelOpen || waitingForDriver || lookingForDriver ? 'hidden' : 'block'}`}>
         <img className="h-full w-full object-cover" src="/map-logo.png" alt="Map" />
