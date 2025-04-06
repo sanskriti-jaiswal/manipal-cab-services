@@ -222,7 +222,7 @@ This project is licensed under the **MIT License**.
 ## 📞 **Contact**
 For any issues or suggestions, feel free to reach out:
 - **GitHub:** (https://github.com/rashimalviyaa)
-- **Email:** rashimalviyaa20032gmail.com
+- **Email:** rashimalviyaa2003gmail.com
 ```
 
 ---
