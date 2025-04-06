@@ -1,24 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const LocationSearchPanel = ({ setShowVehiclePanel, setSelectedLocation, setPanelOpen }) => {
-    const locations = [
-        "Jaipur Junction, Station Road, Gopalbari, Jaipur, Rajasthan",
-        "Jaipur International Airport, Airport Road, Sanganer, Jaipur, Rajasthan",
-        "Bus Stand, Vanasthali Marg, Sindhi Camp, Jaipur",
-        "World Trade Park, Jawaharlal Nehru Marg, Malviya Nagar, Jaipur"
-    ];
-
-    const [selected, setSelected] = useState(null);
-
-    const handleLocationSelect = (location) => {
-        setSelected(location);
-        setSelectedLocation(location);
-        setTimeout(() => setShowVehiclePanel(true), 300);
-    };
-
+const LocationSearchPanel = ({ suggestions, onSelect, setPanelOpen }) => {
     return (
         <div className="mt-4 relative">
-            {/* Only Show Back Arrow in the Top Right Corner */}
             <h4 className="text-lg font-bold text-black flex justify-end items-center">
                 <span 
                     onClick={() => setPanelOpen(false)} 
@@ -28,19 +12,18 @@ const LocationSearchPanel = ({ setShowVehiclePanel, setSelectedLocation, setPane
                 </span>
             </h4>
 
-            {/* Select Location Heading */}
-            <h4 className="text-lg font-bold text-black text-center mt-2">Select a Location</h4>
-            
             <div className="flex flex-col gap-3 mt-2">
-                {locations.map((location, index) => (
+                {suggestions.map((suggestion, index) => (
                     <div 
                         key={index} 
-                        onClick={() => handleLocationSelect(location)}
-                        className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all duration-300 
-                            ${selected === location ? "bg-green-200 border border-green-500" : "bg-gray-100 hover:bg-gray-200"}`}
+                        onClick={() => onSelect(suggestion.description)} 
+                        className="flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all duration-300 
+                                   bg-gray-100 hover:bg-gray-200"
                     >
                         <i className="ri-map-pin-2-fill text-lg text-red-500"></i>
-                        <h4 className="font-medium text-black">{location}</h4>
+                        <h4 className="font-medium text-black">
+                            {suggestion.description}
+                        </h4>
                     </div>
                 ))}
             </div>
