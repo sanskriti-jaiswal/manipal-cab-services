@@ -6,12 +6,16 @@ const blacklistTokenModel = require('../models/blacklistToken.model');
 module.exports.registerUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log("🛑 Validation errors:", errors.array()); // ✅ debug log
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { fullname, email, password } = req.body;
+  const { fullname, email, phone, password } = req.body;
 
-  const isUserAlready = await userModel.findOne({ email });
+  const isUserAlready = await userModel.findOne({
+    $or: [{ email }, { phone }]
+  });
+
   if (isUserAlready) {
     return res.status(400).json({ message: 'User already exists' });
   }
@@ -22,11 +26,13 @@ module.exports.registerUser = async (req, res, next) => {
     firstname: fullname.firstname,
     lastname: fullname.lastname,
     email,
+    phone,
     password: hashedPassword,
   });
 
   const token = user.generateAuthToken();
-  res.status(201).json({ token, user });
+  const { password: _, ...safeUser } = user.toObject();
+  res.status(201).json({ token, user: safeUser });
 };
 
 module.exports.loginUser = async (req, res, next) => {
@@ -35,20 +41,27 @@ module.exports.loginUser = async (req, res, next) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
+  const { identifier, password } = req.body;
 
-  const user = await userModel.findOne({ email }).select('+password');
+  const user = await userModel.findOne({
+    $or: [
+      { email: identifier },
+      { phone: identifier }
+    ]
+  }).select('+password');
+
   if (!user) {
-    return res.status(401).json({ message: 'Invalid email or password' });
+    return res.status(401).json({ message: 'Invalid credentials' });
   }
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return res.status(401).json({ message: 'Invalid email or password' });
+    return res.status(401).json({ message: 'Invalid credentials' });
   }
 
   const token = user.generateAuthToken();
-  res.status(200).json({ token, user });
+  const { password: _, ...safeUser } = user.toObject();
+  res.status(200).json({ token, user: safeUser });
 };
 
 module.exports.getUserProfile = async (req, res, next) => {

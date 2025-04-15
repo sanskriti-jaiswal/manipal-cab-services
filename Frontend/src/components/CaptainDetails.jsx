@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { CaptainDataContext } from '../context/CaptainContext'; 
+import { CaptainDataContext } from '../context/CaptainContext';
 
 const CaptainDetails = () => {
     const { captain } = useContext(CaptainDataContext);
@@ -9,20 +9,23 @@ const CaptainDetails = () => {
             {/* Header with Captain Info and Earnings */}
             <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-3'>
-                    <img 
-                        className='h-12 w-12 rounded-full object-cover border-2 border-gray-200' 
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s" 
-                        alt="Profile" 
+                    <img
+                        className='h-12 w-12 rounded-full object-cover border-2 border-gray-200'
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s"
+                        alt="Profile"
                     />
                     <div>
                         <h4 className='text-lg font-semibold capitalize text-gray-800'>
                             {captain?.fullname?.firstname + " " + captain?.fullname?.lastname}
                         </h4>
-                        <p className='text-xs text-gray-500'>Captain</p>
+                        <p className='text-xs text-gray-500'>
+                            {captain?.cabAgency} &nbsp;•&nbsp; Captain
+                        </p>
                     </div>
+
                 </div>
                 <div className='text-right'>
-                    <h4 className='text-xl font-bold text-gray-800'>₹295.20</h4>
+                    <h4 className='text-xl font-bol d text-gray-800'>₹295.20</h4>
                     <p className='text-xs text-gray-500'>Total Earnings</p>
                 </div>
             </div>
@@ -45,7 +48,7 @@ const CaptainDetails = () => {
                     <p className='text-xs text-gray-500'>Rating</p>
                 </div>
             </div>
-            
+
             {/* Recent Activity Section */}
             <div className='mt-6'>
                 <h4 className='text-sm font-medium text-gray-500 mb-3'>RECENT ACTIVITY</h4>

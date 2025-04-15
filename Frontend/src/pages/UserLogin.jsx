@@ -4,7 +4,7 @@ import { UserDataContext } from '../context/UserContext';
 import axios from 'axios';
 
 const UserLogin = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
   const { user, setUser } = useContext(UserDataContext);
@@ -22,7 +22,7 @@ const UserLogin = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, {
-        email,
+        identifier,
         password
       });
 
@@ -35,7 +35,7 @@ const UserLogin = () => {
         navigate('/home', { replace: true });
       }
 
-      setEmail('');
+      setIdentifier('');
       setPassword('');
     } catch (err) {
       alert("Login failed. Please check your credentials.");
@@ -45,17 +45,17 @@ const UserLogin = () => {
   return (
     <div className='p-7 h-screen flex flex-col justify-between'>
       <div>
-        <img className='w-16 mb-10' src="/logo.png" alt="" />
+        <img className='w-16 mb-10' src="/logo.png" alt="Manipal Cabs Logo" />
 
         <form onSubmit={submitHandler}>
-          <h3 className='text-lg font-medium mb-2'>What's your email</h3>
+          <h3 className='text-lg font-medium mb-2'>Email or Phone Number</h3>
           <input
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             className='bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'
-            type="email"
-            placeholder='email@example.com'
+            type="text"
+            placeholder='email@example.com or 9876543210'
           />
 
           <h3 className='text-lg font-medium mb-2'>Enter Password</h3>

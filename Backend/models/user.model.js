@@ -3,34 +3,40 @@ const bcrypt= require('bcrypt');
 const jwt= require('jsonwebtoken');
 
 
-const userSchema= new mongoose.Schema({
-    fullname:{
-        firstname:{
+const userSchema = new mongoose.Schema({
+    fullname: {
+      firstname: {
         type: String,
-        required:true,
-        minlength:[3,'First name must be atleast 3 characters long'],
-        },
-
-    lastname:{
-        type: String,
-        minlength:[3,'last name must be atleast 3 characters long'],
-        }
-    },
-    email:{
-        type:String,
         required: true,
-        unique: true,
-        minlength:[5,'Email must be at least 5 characters long']
+        minlength: [3, 'First name must be at least 3 characters long'],
+      },
+      lastname: {
+        type: String,
+        minlength: [3, 'Last name must be at least 3 characters long'],
+      }
     },
-    password:{
-        type:String,
-        require: true,
-        select:false,
+    email: {
+      type: String,
+      unique: true,
+      sparse: true,
+      minlength: [5, 'Email must be at least 5 characters long']
     },
-    socketId:{
-        type:String,
+    phone: {
+      type: String,
+      unique: true,
+      sparse: true,
+      match: [/^[6-9]\d{9}$/, 'Invalid phone number']
     },
-})
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
+    socketId: {
+      type: String,
+    }
+  });
+  
 
 
 userSchema.methods.generateAuthToken= function(){

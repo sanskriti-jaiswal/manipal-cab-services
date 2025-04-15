@@ -182,10 +182,11 @@ const Home = () => {
       {/* 💜 Pool Cab Button */}
       <button
         onClick={() => navigate('/all-pooled-cabs')}
-        className="absolute top-5 right-5 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg z-20"
+        className="absolute top-5 right-5 bg-black text-white px-4 py-2 rounded-xl font-semibold shadow-lg z-20"
       >
-        Pool Cab
+        Pool Cabs
       </button>
+
 
       <div className={`w-full h-full ${panelOpen || waitingForDriver || lookingForDriver ? 'hidden' : 'block'}`}>
         <img className="h-full w-full object-cover" src="/map-logo.png" alt="Map" />

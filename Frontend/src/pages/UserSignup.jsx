@@ -1,116 +1,139 @@
-import React, { useState, useContext } from "react"; 
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
-import { UserDataContext } from "../context/UserContext";  // Import the context
+import axios from "axios";
+import { UserDataContext } from "../context/UserContext";
+import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
+import { auth } from "../firebase";
 
 const UserSignup = () => {
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [error, setError] = useState(""); // State for error handling
+  const [otp, setOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [step, setStep] = useState(1);
+  const [error, setError] = useState("");
 
-  const navigate = useNavigate(); 
-  const { setUser } = useContext(UserDataContext);  // Use context here
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserDataContext);
 
-  const submitHandler = async (e) => {
-    e.preventDefault(); // Prevent page refresh
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: (response) => {
+          console.log("Recaptcha verified:", response);
+        },
+        "expired-callback": () => {
+          console.warn("Recaptcha expired");
+        },
+      });
+    }
+  };
 
-    // Validate inputs
-    if (!firstName || !lastName || !email || !password) {
-      setError("All fields are required!");
+  const handleSendOtp = async () => {
+    setError("");
+
+    if (!phone || phone.length !== 10) {
+      setError("Please enter a valid 10-digit phone number.");
       return;
     }
 
-    const newUser = {
-      fullname: {
-        firstname: firstName,
-        lastname: lastName
-      },
-      email: email,
-      password: password
-    };
+    try {
+      setupRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+      const fullPhone = "+91" + phone.trim();
+
+      const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      setConfirmationResult(confirmation);
+      setStep(2);
+    } catch (err) {
+      console.error("OTP error:", err);
+      setError("Failed to send OTP. Please try again.");
+    }
+  };
+
+  const handleVerifyOtpAndRegister = async () => {
+    if (!otp || !confirmationResult) {
+      setError("Please enter the OTP sent to your phone.");
+      return;
+    }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/users/register`,
-        newUser
-      );
+      await confirmationResult.confirm(otp);
+
+      const newUser = {
+        fullname: {
+          firstname: firstName,
+          lastname: lastName
+        },
+        email: email.trim(),
+        phone: phone.trim(),
+        password
+      };
+
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser);
 
       if (response.status === 201) {
         const data = response.data;
-        setUser(data.user);  // Set the user data in context
-        localStorage.setItem("token", data.token); // Store token in local storage
-        navigate('/home'); // Navigate to home page
+        setUser(data.user);
+        localStorage.setItem("token", data.token);
+        navigate("/home");
       }
     } catch (err) {
-      console.error("Signup error:", err);
-      setError("Signup failed. Please try again.");
+      console.error("Verification/Register error:", err);
+      const msg = err.response?.data?.message || "Invalid OTP or registration failed.";
+      setError(msg);
     }
-
-    // Reset form fields
-    setEmail("");
-    setFirstName("");
-    setLastName("");
-    setPassword("");
   };
 
   return (
     <div className="p-7 h-screen flex flex-col justify-between">
       <div>
-        <img className='w-20 mb-3 ' src="/logo.png" alt="manipal logo" />
-        <h3 className="text-lg font-medium mb-2">What's your name?</h3>
-        
-        {/* ✅ Wrap inside a form */}
-        <form onSubmit={submitHandler}>
-          <div className="flex gap-4 mb-7">
-            <input
-              required
-              className="bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg placeholder:text-base"
-              type="text"
-              placeholder="First name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <input
-              required
-              className="bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg placeholder:text-base"
-              type="text"
-              placeholder="Last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </div>
+        <img className="w-20 mb-3" src="/logo.png" alt="manipal logo" />
 
-          <h3 className="text-lg font-medium mb-2">What's your email?</h3>
-          <input
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-gray-200 mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
-            type="email"
-            placeholder="email@example.com"
-          />
+        {step === 1 && (
+          <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }}>
+            <h3 className="text-lg font-medium mb-2">What's your name?</h3>
+            <div className="flex gap-4 mb-7">
+              <input required className="bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <input required className="bg-gray-200 w-1/2 rounded-lg px-4 py-2 border text-lg" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </div>
 
-          <h3 className="text-lg font-medium mb-2">Enter Password</h3>
-          <input
-            className="bg-gray-200 mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            type="password"
-            placeholder="password"
-          />
+            <h3 className="text-lg font-medium mb-2">What's your email?</h3>
+            <input required value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-200 mb-7 rounded-lg px-4 py-2 border w-full text-lg" type="email" placeholder="email@example.com" />
 
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>} {/* Display error message if any */}
+            <h3 className="text-lg font-medium mb-2">Phone Number</h3>
+            <input required value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-gray-200 mb-7 rounded-lg px-4 py-2 border w-full text-lg" type="text" placeholder="9876543210" />
 
-          <button
-            type="submit" // ✅ Make sure it's a submit button
-            className="bg-black text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg"
-          >
-            Create account
-          </button>
-        </form>
+            <h3 className="text-lg font-medium mb-2">Enter Password</h3>
+            <input required className="bg-gray-200 mb-7 rounded-lg px-4 py-2 border w-full text-lg" value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="password" />
+
+            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+            <button type="submit" className="bg-black text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg">
+              Send OTP
+            </button>
+
+            {/* Only once */}
+            <div id="recaptcha-container"></div>
+          </form>
+        )}
+
+        {step === 2 && (
+          <form onSubmit={(e) => { e.preventDefault(); handleVerifyOtpAndRegister(); }}>
+            <h3 className="text-lg font-medium mb-2">Enter OTP sent to +91 {phone}</h3>
+            <input required value={otp} onChange={(e) => setOtp(e.target.value)} className="bg-gray-200 mb-5 rounded-lg px-4 py-2 border w-full text-lg" type="text" placeholder="Enter OTP" />
+
+            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+            <button type="submit" className="bg-green-600 text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg">
+              Verify OTP & Register
+            </button>
+          </form>
+        )}
 
         <p className="text-center">
           Already have an account? <Link to="/login" className="text-blue-600">Login here</Link>
